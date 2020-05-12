@@ -1,0 +1,18 @@
+- hosts: all
+  become_method: sudo
+  become: true
+  gather_facts: True
+  vars_files:
+  - vars/front.yml
+  roles:
+  - { role: cloudalchemy.prometheus, tags: prometheus }
+ # - { role: cloudalchemy.grafana, tags: grafana }
+  #- { role: blackbox_exporter, tags: blackbox_exporter }
+  #- { role: users, tags: users }
+  #- { role: python, tags: python }
+  #- { role: pip, tags: pip }
+  #- { role: credstash, tags: credstash }
+  #- { role: mackerel, tags: mackerel }
+  #- { role: php, tags: php }
+  #- { role: nginx, tags: nginx }
+  #- { role: td-agent, tags: td-agent }

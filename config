@@ -1,0 +1,25 @@
+#VTI
+Host git.vti.com.vn
+	Preferredauthentications publickey
+	IdentityFile ~/.ssh/gitvti
+#Grafana
+Host grafana
+        Hostname 52.221.200.188
+        IdentityFile ~/.ssh/bastionkey.pem
+        #ForwardAgent yes
+        User ec2-user
+Host 10.2.3.*
+        IdentityFile ~/.ssh/prometheuskey.pem        
+	ForwardAgent yes
+	User ec2-user
+	ProxyCommand ssh -W %h:%p ec2-user@grafana
+Host test
+	Hostname 172.16.1.230
+	IdentityFile ~/.ssh/prometheuskey.pem
+	User ec2-user
+	ProxyCommand ssh -W %h:%p ec2-user@grafana
+Host 172.16.*
+	IdentityFile ~/.ssh/bastionkey.pem
+	ForwardAgent yes
+	User ec2-user
+	ProxyCommand ssh -W %h:%p ec2-user@grafana

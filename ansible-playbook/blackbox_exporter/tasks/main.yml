@@ -1,0 +1,48 @@
+- name: Install wget and nano
+  shell: yum install wget nano -y
+
+- name: Create user blackbox_exporter
+  shell: useradd --no-create-home --shell /bin/false blackbox_exporter
+  ignore_errors: yes
+
+- name: Download blackbox 
+  get_url:
+    url: https://github.com/prometheus/blackbox_exporter/releases/download/v0.16.0/blackbox_exporter-0.16.0.linux-amd64.tar.gz
+    dest: /home/ec2-user/
+
+- name: Decompress blackbox
+  shell: tar -xvf /home/ec2-user/blackbox_exporter-0.16.0.linux-amd64.tar.gz
+
+- name: Copy blackbox binary to usr/local/bin/
+  shell: cp /home/ec2-user/blackbox_exporter-0.16.0.linux-amd64/blackbox_exporter /usr/local/bin/blackbox_exporter & chown blackbox_exporter:blackbox_exporter /usr/local/bin/blackbox_exporter
+  ignore_errors: yes
+
+- name: Create blackbox_exporter config folder
+  file:
+    path: /etc/blackbox_exporter
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Copy blackbox_exporter config from template
+  template:
+    src: blackbox.yml.j2
+    dest: /etc/blackbox_exporter/blackbox.yml
+    owner: blackbox_exporter
+    group: blackbox_exporter
+    mode: '0644'
+
+- name: Copy blackbox_exporter config from template
+  template:
+    src: blackbox_exporter.service.j2
+    dest: /etc/systemd/system/blackbox_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: restart blackbox_exporter.service & daemon-reload to pick up config changes
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: blackbox_exporter.service
